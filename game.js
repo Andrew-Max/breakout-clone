@@ -9,8 +9,15 @@ var rect2;
 var rect3;
 var rect4;
 var ballRadius = 10;
+var paddleHeight = 12;
+var paddleWidth = 100;
+var paddleX;
+var paddleY = canvas.height - 40;
+var rightPressed = false;
+var leftPressed = false;
 
 function setInitialPosition() {
+  paddleX = (canvas.width-paddleWidth)/2;
   xPos = canvas.width / 2;
   yPos = canvas.height - 30;
   diffX = 1;
@@ -30,10 +37,10 @@ function drawBall() {
   ctx.closePath();
 };
 
-function drawRect(x, y, h, l) {
+function drawRect(x, y, h, l, color) {
   ctx.beginPath();
   ctx.rect(x, y, h, l);
-  ctx.fillStyle = "green";
+  ctx.fillStyle = color;
   ctx.fill();
   ctx.closePath();
 }
@@ -74,7 +81,7 @@ function checkTargetCollisions() {
       rect1 = false;
       toggleXDirection();
     } else {
-      drawRect(20, 20 , 90, 20);
+      drawRect(20, 20 , 90, 20, "green");
     }
   }
 
@@ -86,7 +93,7 @@ function checkTargetCollisions() {
       rect2 = false;
       toggleXDirection();
     } else {
-      drawRect(130, 20,  90, 20);
+      drawRect(130, 20,  90, 20, "orange");
     }
   }
 
@@ -98,7 +105,7 @@ function checkTargetCollisions() {
       rect3 = false;
       toggleXDirection();
     } else {
-      drawRect(240, 20,  90, 20);
+      drawRect(240, 20,  90, 20, "teal");
     }
   }
 
@@ -110,9 +117,13 @@ function checkTargetCollisions() {
       rect4 = false;
       toggleXDirection();
     } else {
-      drawRect(350, 20,  90, 20);
+      drawRect(350, 20,  90, 20, "purple");
     }
   }
+};
+
+function drawPaddle() {
+  drawRect(paddleX, paddleY,  paddleWidth, paddleHeight, "yellow");
 };
 
 function checkWallCollisions() {
@@ -125,20 +136,54 @@ function checkWallCollisions() {
   }
 };
 
+function movePaddle() {
+  if (rightPressed) {
+    if (paddleX + paddleWidth  < canvas.width) {
+      paddleX += 4;
+    }
+  } else if (leftPressed) {
+    if (paddleX > 0) {
+      paddleX -= 4;
+    }
+  }
+};
+
 function draw() {
   ctx.clearRect(0,0, canvas.width, canvas.height)
   drawBall();
   xPos += diffX;
   yPos += diffY;
 
+  movePaddle();
+  drawPaddle();
   checkTargetCollisions();
   checkWallCollisions();
 };
+
+function keyDownHandler(e) {
+  if(e.keyCode == 39) {
+      rightPressed = true;
+  }
+  else if(e.keyCode == 37) {
+      leftPressed = true;
+  }
+}
+function keyUpHandler(e) {
+  if(e.keyCode == 39) {
+      rightPressed = false;
+  }
+  else if(e.keyCode == 37) {
+      leftPressed = false;
+  }
+}
 
 $(document).ready(function () {
   $('button.restart').click(function () {
     setInitialPosition();
   })
+
+  $(document).keydown(keyDownHandler);
+  $(document).keyup(keyUpHandler);
 });
 
 setInitialPosition();
