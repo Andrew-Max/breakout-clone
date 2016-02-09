@@ -122,10 +122,6 @@ function checkTargetCollisions() {
   }
 };
 
-function drawPaddle() {
-  drawRect(paddleX, paddleY,  paddleWidth, paddleHeight, "yellow");
-};
-
 function checkWallCollisions() {
   if (xPos  + ballRadius >= canvas.width || xPos - ballRadius <= 0) {
     toggleXDirection();
@@ -134,6 +130,21 @@ function checkWallCollisions() {
   if (yPos + ballRadius >= canvas.height || yPos - ballRadius <= 0) {
     toggleYDirection();
   }
+};
+
+function checkPaddleCollisions() {
+  var paddleTop = paddleY;
+  var paddleBotom = paddleY - paddleHeight;
+  var paddleLeft = paddleX
+  var paddleRight = paddleX + paddleWidth;
+
+  if (checkTopBottomCollision(paddleTop, paddleBotom, paddleLeft, paddleRight)) {
+    toggleYDirection();
+  }
+};
+
+function drawPaddle() {
+  drawRect(paddleX, paddleY,  paddleWidth, paddleHeight, "yellow");
 };
 
 function movePaddle() {
@@ -158,6 +169,7 @@ function draw() {
   drawPaddle();
   checkTargetCollisions();
   checkWallCollisions();
+  checkPaddleCollisions();
 };
 
 function keyDownHandler(e) {
