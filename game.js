@@ -8,6 +8,7 @@ var rect1;
 var rect2;
 var rect3;
 var rect4;
+// todo: set constants
 var ballRadius = 10;
 var paddleHeight = 12;
 var paddleWidth = 100;
@@ -28,7 +29,6 @@ function setInitialPosition() {
   rect4 = true;
 }
 
-
 function drawBall() {
   ctx.beginPath();
   ctx.arc(xPos, yPos, ballRadius, 0, Math.PI*2);
@@ -43,28 +43,38 @@ function drawRect(x, y, h, l, color) {
   ctx.fillStyle = color;
   ctx.fill();
   ctx.closePath();
-}
+};
 
 function toggleXDirection() {
   diffX = -diffX;
-}
+};
 
 function toggleYDirection() {
   diffY = -diffY;
-}
+};
 
 function toggleXandYDirection() {
   toggleYDirection();
   toggleXDirection()
-}
+};
+
+// todo: dry up repetition of adding ballRadius
+function pointIsBetweenEdges(axisPosition, a, b) {
+  return ( axisPosition + ballRadius >= a ) && ( axisPosition  - ballRadius <= b );
+};
+
+function pointIsAtEitherEdge(axisPosition, a, b) {
+  return ( (axisPosition + ballRadius >= a) && (axisPosition + ballRadius <= a + 5) ) || ( (axisPosition - ballRadius <= b) && (axisPosition - ballRadius >= b - 5) );
+};
 
 function checkSideCollision(top, bottom, left, right) {
-return ( (xPos + ballRadius) === left || (xPos  - ballRadius) === right) && ( (yPos + ballRadius >= top) && (yPos - ballRadius <= bottom) );
-}
+  return pointIsBetweenEdges(yPos,top, bottom) && pointIsAtEitherEdge(xPos, left, right)
+};
 
 function checkTopBottomCollision(top, bottom, left, right) {
- return ( (xPos + ballRadius) >= left && (xPos  - ballRadius) <= right) && ( (yPos + ballRadius === top) || (yPos - ballRadius === bottom) );
+ return  pointIsBetweenEdges(xPos, left, right) && pointIsAtEitherEdge(yPos, top, bottom);
 }
+
 
 function checkCornerCollision(top, bottom, left,right) {
   return ( (xPos + ballRadius) == left && (yPos + ballRadius) === top ) || ( (xPos + ballRadius) == left && (yPos - ballRadius) === bottom ) || ( (xPos - ballRadius) == right && (yPos - ballRadius) === bottom ) || ( (xPos - ballRadius) == right && (yPos + ballRadius) === top );
@@ -134,13 +144,14 @@ function checkWallCollisions() {
 
 function checkPaddleCollisions() {
   var paddleTop = paddleY;
-  var paddleBotom = paddleY - paddleHeight;
+  var paddleBotom = paddleY + paddleHeight;
   var paddleLeft = paddleX
   var paddleRight = paddleX + paddleWidth;
 
   if (checkTopBottomCollision(paddleTop, paddleBotom, paddleLeft, paddleRight)) {
     toggleYDirection();
   }
+ //todo: deal with ball going inside paddle;
 };
 
 function drawPaddle() {
@@ -160,16 +171,27 @@ function movePaddle() {
 };
 
 function draw() {
-  ctx.clearRect(0,0, canvas.width, canvas.height)
-  drawBall();
-  xPos += diffX;
-  yPos += diffY;
+  ctx.clearRect(0,0, canvas.width, canvas.height);
+  updateBall();
+  updatePaddle();
+  checkCollisions();
+};
 
-  movePaddle();
-  drawPaddle();
+function checkCollisions() {
   checkTargetCollisions();
   checkWallCollisions();
   checkPaddleCollisions();
+};
+
+function updatePaddle() {
+  movePaddle();
+  drawPaddle();
+};
+
+function updateBall() {
+  drawBall();
+  xPos += diffX;
+  yPos += diffY;
 };
 
 function keyDownHandler(e) {
