@@ -8,6 +8,10 @@ var rect1;
 var rect2;
 var rect3;
 var rect4;
+var rect5;
+var rect6;
+var rect7;
+var rect8;
 // todo: set constants
 var ballRadius = 10;
 var paddleHeight = 12;
@@ -20,13 +24,17 @@ var leftPressed = false;
 function setInitialPosition() {
   paddleX = (canvas.width-paddleWidth)/2;
   xPos = canvas.width / 2;
-  yPos = canvas.height - 30;
+  yPos = canvas.height - 60;
   diffX = 1;
   diffY = -3;
   rect1 = true;
   rect2 = true;
   rect3 = true;
   rect4 = true;
+  rect5 = true;
+  rect6 = true;
+  rect7 = true;
+  rect8 = true;
 }
 
 function drawBall() {
@@ -130,6 +138,54 @@ function checkTargetCollisions() {
       drawRect(350, 20,  90, 20, "purple");
     }
   }
+
+  if (rect5) {
+    if ( checkTopBottomCollision(40, 60, 20, 110) ) {
+      rect5 = false;
+      toggleYDirection();
+    } else if ( checkSideCollision(40, 60, 20, 110) ) {
+      rect5 = false;
+      toggleXDirection();
+    } else {
+      drawRect(20, 40 , 90, 20, "orange");
+    }
+  }
+
+  if (rect6) {
+    if ( checkTopBottomCollision(40, 60, 130, 220) ) {
+      rect6 = false;
+      toggleYDirection();
+    } else if ( checkSideCollision(40, 60, 130, 220) ) {
+      rect6 = false;
+      toggleXDirection();
+    } else {
+      drawRect(130, 40,  90, 20, "green");
+    }
+  }
+
+  if (rect7) {
+    if ( checkTopBottomCollision(40, 60, 240, 330) ) {
+      rect7 = false;
+      toggleYDirection();
+    } else if ( checkSideCollision(40, 60, 240, 330) ) {
+      rect7 = false;
+      toggleXDirection();
+    } else {
+      drawRect(240, 40,  90, 20, "purple");
+    }
+  }
+
+  if (rect8) {
+    if ( checkTopBottomCollision(40, 60, 350, 440) ) {
+      rect8 = false;
+      toggleYDirection();
+    } else if ( checkSideCollision(40, 60, 350, 440) ) {
+      rect8 = false;
+      toggleXDirection();
+    } else {
+      drawRect(350, 40,  90, 20, "teal");
+    }
+  }
 };
 
 function checkWallCollisions() {
@@ -172,9 +228,17 @@ function movePaddle() {
 
 function draw() {
   ctx.clearRect(0,0, canvas.width, canvas.height);
-  updateBall();
-  updatePaddle();
-  checkCollisions();
+  if (gameLost()) {
+    drawRect(0,0, canvas.width, canvas.height, "red");
+  } else {
+    updateBall();
+    updatePaddle();
+    checkCollisions();
+  }
+};
+
+function gameLost() {
+  return yPos + ballRadius >= canvas.height;
 };
 
 function checkCollisions() {
